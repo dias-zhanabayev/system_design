@@ -1,0 +1,1006 @@
+openapi: 3.0.0
+info:
+  title: Social network for travelers
+  description: Social network for travelers
+  version: 1.0.0
+servers:
+  - url: 'https://social-network-for-travelers.com'
+paths:
+  /api/v1/register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username
+                  maxLength: 50
+                email:
+                  type: string
+                  format: email
+                  description: Email
+                password:
+                  type: string
+                  description: Password
+                  minLength: 8
+                  maxLength: 50
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/login:
+    post:
+      summary: Login
+      operationId: loginUser
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email
+                password:
+                  type: string
+                  description: Password
+                  minLength: 8
+                  maxLength: 50
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/forgot-password:
+    post:
+      summary: Forgot password
+      operationId: forgotPassword
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/reset-password:
+    post:
+      summary: Reset password
+      operationId: resetPassword
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Reset password token
+                password:
+                  type: string
+                  description: New password
+                  minLength: 8
+                  maxLength: 50
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/author/posts:
+    post:
+      summary: Create a post
+      operationId: createPost
+      tags:
+        - posts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: Get list of posts
+      operationId: getPosts
+      tags:
+        - posts
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of posts per page
+      responses:
+        '200':
+          description: A list of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReadPost'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/author/posts/{postID}:
+    get:
+      summary: Get a post by ID
+      operationId: getPostById
+      tags:
+        - posts
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: string
+          description: The ID of the post to retrieve
+      responses:
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ReadPost'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a post by ID
+      operationId: updatePost
+      tags:
+        - posts
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: string
+          description: The ID of the post to update
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdatePost'
+      responses:
+        '200':
+          description: Updated
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a post by ID
+      operationId: deletePost
+      tags:
+        - posts
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: string
+          description: The ID of the post to delete
+      responses:
+        '204':
+          description: No content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/posts:
+    get:
+      summary: Get list of posts
+      operationId: getPosts
+      description: Get list of posts from authors that the user follows
+      tags:
+        - public posts
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of posts per page
+      responses:
+        '200':
+          description: A list of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReadPublicPost'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/posts/{postID}:
+    get:
+      summary: Get a post by ID
+      operationId: getPostById
+      tags:
+        - public posts
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: string
+          description: The ID of the post to retrieve
+      responses:
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ReadPublicPost'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/posts/{postID}/like:
+    post:
+      summary: Like a post
+      operationId: likePost
+      tags:
+        - likes
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: string
+          description: The ID of the post to like
+      responses:
+        '200':
+          description: Liked
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/posts/{postID}/unlike:
+    post:
+      summary: Unlike a post
+      operationId: unlikePost
+      tags:
+        - likes
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: string
+          description: The ID of the post to unlike
+      responses:
+        '200':
+          description: Unliked
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/posts/{postID}/comments:
+    post:
+      summary: Create a comment
+      operationId: createComment
+      tags:
+        - comments
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: string
+          description: The ID of the post to comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: ID
+                text:
+                  type: string
+                  description: Comment text
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a comment
+      operationId: deleteComment
+      tags:
+          - comments
+      security:
+          - bearerAuth: [ ]
+      parameters:
+          - in: path
+            name: postID
+            required: true
+            schema:
+                type: string
+            description: The ID of the post to delete comment
+          - in: query
+            name: commentID
+            schema:
+                type: string
+            description: The ID of the comment to delete
+      responses:
+          '204':
+            description: No content
+          '400':
+            description: Bad request
+            content:
+                application/json:
+                  schema:
+                      $ref: '#/components/schemas/Error'
+          '404':
+            description: Not found
+            content:
+                application/json:
+                  schema:
+                      $ref: '#/components/schemas/Error'
+    get:
+        summary: Get list of comments
+        operationId: getComments
+        tags:
+            - comments
+        security:
+            - bearerAuth: [ ]
+        parameters:
+            - in: path
+              name: postID
+              required: true
+              schema:
+                  type: string
+              description: The ID of the post to retrieve comments
+            - in: query
+              name: page
+              schema:
+                type: integer
+                default: 1
+              description: Page number
+            - in: query
+              name: limit
+              schema:
+                type: integer
+                default: 10
+              description: Number of comments per page
+        responses:
+            '200':
+              description: A list of comments
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        text:
+                          type: string
+                        createdAt:
+                          type: string
+                        relationships:
+                          type: object
+                          properties:
+                            users:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                username:
+                                  type: string
+            '400':
+              description: Bad request
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Error'
+  /api/v1/search:
+    get:
+      summary: Search for posts
+      operationId: searchPosts
+      description: Search for posts by query from all authors
+      tags:
+        - search
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Search query
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of posts per page
+        - in: query
+          name: searchText
+          schema:
+              type: string
+      responses:
+        '200':
+          description: A list of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReadPublicPost'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/followers:
+    get:
+      summary: Get list of followers
+      operationId: getFollowers
+      tags:
+        - followers
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of followers per page
+      responses:
+        '200':
+          description: A list of followers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    username:
+                      type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/subscriptions:
+    get:
+      summary: Get list of subscriptions
+      operationId: getSubscriptions
+      tags:
+        - subscriptions
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of subscriptions per page
+      responses:
+        '200':
+          description: A list of subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    username:
+                      type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/chats:
+    get:
+      summary: Get list of chats
+      operationId: getChats
+      tags:
+        - chats
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of chats per page
+      responses:
+        '200':
+          description: A list of chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    username:
+                      type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a chat
+      operationId: createChat
+      tags:
+        - chats
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userID:
+                  type: string
+                  description: ID
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/chats/{chatID}/messages:
+    get:
+      summary: Get list of messages
+      operationId: getMessages
+      tags:
+        - messages
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: chatID
+          required: true
+          schema:
+            type: string
+          description: The ID of the chat to retrieve messages
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of messages per page
+      responses:
+        '200':
+          description: A list of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    text:
+                      type: string
+                    createdAt:
+                      type: string
+                    relationships:
+                      type: object
+                      properties:
+                        users:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            username:
+                              type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a message
+      operationId: createMessage
+      tags:
+        - messages
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: chatID
+          required: true
+          schema:
+            type: string
+          description: The ID of the chat to send message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: ID
+                text:
+                  type: string
+                  description: Message text
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+    securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+    schemas:
+        Post:
+          type: object
+          required:
+            - id
+            - location
+            - photos
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID
+            description:
+              type: string
+              maxLength: 2000
+              description: Description
+            tags:
+              type: array
+              maxItems: 10
+              items:
+                type: string
+              description: Tags
+            location:
+              type: object
+              description: Location of the travel post
+              properties:
+                  latitude:
+                    type: number
+                    format: float
+                    description: Latitude
+                  longitude:
+                    type: number
+                    format: float
+                    description: Longitude
+            photos:
+              type: array
+              items:
+                type: string
+                format: binary
+              description: Array of photos for the travel post
+        ReadPost:
+          type: object
+          properties:
+            id:
+              type: string
+            attributes:
+              type: object
+              properties:
+                description:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                location:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                      format: float
+                    longitude:
+                      type: number
+                      format: float
+                photos:
+                  type: array
+                  items:
+                    type: string
+                    description: URL of the photo
+            relationships:
+              type: object
+              properties:
+                  likes:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        example: 1
+                        description: Number of likes
+        ReadPublicPost:
+          type: object
+          properties:
+            id:
+              type: string
+            attributes:
+              type: object
+              properties:
+                description:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                location:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                      format: float
+                    longitude:
+                      type: number
+                      format: float
+                photos:
+                  type: array
+                  items:
+                    type: string
+                    description: URL of the photo
+            relationships:
+              type: object
+              properties:
+                likes:
+                  type: object
+                  properties:
+                    count:
+                      type: integer
+                      example: 1
+                      description: Number of likes
+                author:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    username:
+                      type: string
+        UpdatePost:
+          type: object
+          properties:
+            description:
+              type: string
+              maxLength: 2000
+              description: Description
+            tags:
+              type: array
+              maxItems: 10
+              items:
+                type: string
+              description: Tags
+            location:
+              type: object
+              description: Location of the travel post
+              properties:
+                latitude:
+                  type: number
+                  format: float
+                  description: Latitude
+                longitude:
+                  type: number
+                  format: float
+                  description: Longitude
+            photos:
+              type: array
+              items:
+                type: string
+                format: binary
+              description: Array of photos for the travel post
+        Error:
+            type: object
+            properties:
+                message:
+                  type: string
+                  description: Error message

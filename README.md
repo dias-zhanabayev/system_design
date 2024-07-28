@@ -81,3 +81,10 @@ Disks_for_capacity = 18 000Tb / 100Tb = 180
 Disks_for_throughput = 6,38 ГБ/с / 500Mb/sec = ~13
 Disks_for_iops = 2 552 / 1 000 = ~3
 Disks = 180
+
+## Расчет требуемого числа хостов
+Для одного хоста будем использовать 2 диска.
+Hosts = disks / disks_per_host
+Hosts = 290 / 2 = 145
+Hosts_with_replication = hosts * replication_factor
+Hosts_with_replication = 145 * 2 = 290

@@ -43,6 +43,13 @@
   }
 ```
 
+
+### Design overview
+
+
+![Container diagram for Social network](./architecture/context.svg)
+
+
 ### Расчет нагрузки с учетом сезонности:
 
 | **Описание**                  | **Значение**                       |

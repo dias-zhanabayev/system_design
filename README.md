@@ -66,32 +66,34 @@
 
 
 ### Расчет количества дисков для хранения данных на 1 год
+
 Посты без картинок:
-Прирост данных в год: 348 МБ/c * 86 400 * 365 = ~11 000Tb/year
-IOPS= 232 (write) + 2 320 (read) = 2 552
-Трафик = 348 МБ/с + 1 392 МБ/с = 1 740 МБ/с
+- Прирост данных в год: 348 МБ/c * 86 400 * 365 = ~11 000Tb/year
+- IOPS= 232 (write) + 2 320 (read) = 2 552
+- Трафик = 348 МБ/с + 1 392 МБ/с = 1 740 МБ/с
 
 Для SSD (Sata):
-Disks_for_capacity = 11 000Tb / 100Tb = 110
-Disks_for_throughput = 1 740/sec / 500Mb/sec = ~4
-Disks_for_iops = 2 552 / 1 000 = ~3
-Disks = 110
+- Disks_for_capacity = 11 000Tb / 100Tb = 110
+- Disks_for_throughput = 1 740/sec / 500Mb/sec = ~4
+- Disks_for_iops = 2 552 / 1 000 = ~3
+- Disks = 110
 
 Картинки
-RPS за картинками: 232 * 2 500 КБ = 580 МБ/c
-Прирост данных в год: 580 МБ/c * 86 400 * 365 = ~18 000Tb/year
-IOPS= 232 (write) + 2 320 (read) = 2 552
-Трафик = 580 МБ/с + 5,8 ГБ/с = 6,38 ГБ/с
+- RPS за картинками: 232 * 2 500 КБ = 580 МБ/c
+- Прирост данных в год: 580 МБ/c * 86 400 * 365 = ~18 000Tb/year
+- IOPS= 232 (write) + 2 320 (read) = 2 552
+- Трафик = 580 МБ/с + 5,8 ГБ/с = 6,38 ГБ/с
 
 Для SSD (Sata):
-Disks_for_capacity = 18 000Tb / 100Tb = 180
-Disks_for_throughput = 6,38 ГБ/с / 500Mb/sec = ~13
-Disks_for_iops = 2 552 / 1 000 = ~3
-Disks = 180
+- Disks_for_capacity = 18 000Tb / 100Tb = 180
+- Disks_for_throughput = 6,38 ГБ/с / 500Mb/sec = ~13
+- Disks_for_iops = 2 552 / 1 000 = ~3
+- Disks = 180
 
 ## Расчет требуемого числа хостов
+
 Для одного хоста будем использовать 2 диска.
-Hosts = disks / disks_per_host
-Hosts = 290 / 2 = 145
-Hosts_with_replication = hosts * replication_factor
-Hosts_with_replication = 145 * 2 = 290
+- Hosts = disks / disks_per_host
+- Hosts = 290 / 2 = 145
+- Hosts_with_replication = hosts * replication_factor
+- Hosts_with_replication = 145 * 2 = 290

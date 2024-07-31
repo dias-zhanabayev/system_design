@@ -1,0 +1,53 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User", "Traveler using the social network to share and explore travel experiences")
+
+System_Boundary(SocialNetworkBoundary, "Social Network System") {
+    Container(webApp, "Web Application", "ReactJS", "Allows users to interact with the social network")
+    Container(mobileApp, "Mobile Application", "Flutter", "Allows users to interact with the social network on mobile devices")
+    Container(apiGateway, "API Gateway", "Nginx", "Handles incoming API requests")
+    Container(authService, "Authentication Service", "OAuth 2.0", "Manages user authentication and authorization")
+    Container(postService, "Post Service", "Go", "Handles CRUD operations for posts")
+    Container(commentService, "Comment Service", "Go", "Manages comments on posts")
+    Container(likeService, "Like Service", "Go", "Handles likes on posts")
+    Container(subscriptionService, "Subscription Service", "Go", "Manages subscriptions and notifications")
+    Container(messageService, "Message Service", "Go", "Handles direct messages between users")
+    Container(searchService, "Search Service", "Elasticsearch", "Allows users to search for posts and popular travel locations")
+    Container(notificationsService, "Notifications Service", "Go", "Sends notifications to users")
+    ContainerDb(userDB, "User Database", "PostgreSQL", "Stores user data")
+    ContainerDb(postDB, "Post Database", "PostgreSQL", "Stores posts data")
+    ContainerDb(commentDB, "Comment Database", "PostgreSQL", "Stores comments data")
+    ContainerDb(likeDB, "Like Database", "PostgreSQL", "Stores likes data")
+    ContainerDb(subscriptionDB, "Subscription Database", "PostgreSQL", "Stores subscription data")
+    ContainerDb(messageDB, "Message Database", "PostgreSQL", "Stores direct messages data")
+    ContainerDb(searchIndex, "Search Index", "Elasticsearch", "Indexes posts for search functionality")
+    Container(imageStorage, "Image Storage", "AWS S3", "Stores images associated with posts")
+}
+
+Rel(user, webApp, "Uses")
+Rel(user, mobileApp, "Uses")
+Rel(webApp, apiGateway, "Sends API requests")
+Rel(mobileApp, apiGateway, "Sends API requests")
+Rel(apiGateway, authService, "Sends authentication requests")
+Rel(apiGateway, postService, "Sends post-related requests")
+Rel(apiGateway, commentService, "Sends comment-related requests")
+Rel(apiGateway, likeService, "Sends like-related requests")
+Rel(apiGateway, subscriptionService, "Sends subscription-related requests")
+Rel(apiGateway, messageService, "Sends message-related requests")
+Rel(apiGateway, searchService, "Sends search requests")
+Rel(apiGateway, notificationsService, "Sends notification-related requests")
+
+Rel(authService, userDB, "Reads/Writes user data")
+Rel(postService, postDB, "Reads/Writes post data")
+Rel(commentService, commentDB, "Reads/Writes comment data")
+Rel(likeService, likeDB, "Reads/Writes like data")
+Rel(subscriptionService, subscriptionDB, "Reads/Writes subscription data")
+Rel(messageService, messageDB, "Reads/Writes message data")
+Rel(searchService, searchIndex, "Reads/Writes search index")
+Rel(postService, imageStorage, "Stores/Retrieves images")
+
+Rel(subscriptionService, notificationsService, "Notifies of new posts")
+Rel(notificationsService, user, "Sends notifications")
+
+@enduml
